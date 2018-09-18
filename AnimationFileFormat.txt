@@ -1,0 +1,7 @@
+[frameRate]
+[fameCount] = n
+[frameScale]
+[1 frame path in res folder]
+[2 frame path]
+...
+[n frame path]
