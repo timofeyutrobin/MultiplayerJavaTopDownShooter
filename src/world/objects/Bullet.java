@@ -62,8 +62,5 @@ public class Bullet extends GameObject {
     public void render(Graphics2D g) {
         g.setColor(Color.WHITE);
         g.fillOval(shape.x, shape.y, BULLET_SIZE, BULLET_SIZE);
-
-        g.setColor(Color.RED);
-        g.drawRect(shape.x, shape.y, shape.width, shape.height);
     }
 }
