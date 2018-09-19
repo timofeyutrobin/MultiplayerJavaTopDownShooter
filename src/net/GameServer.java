@@ -1,7 +1,6 @@
 package net;
 
 import net.packets.*;
-import world.level.Level;
 import world.objects.Player;
 
 import java.io.IOException;
