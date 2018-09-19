@@ -67,7 +67,6 @@ public class Game extends Canvas {
         client.setLevel(level);
         client.start();
         if (server != null) {
-            server.setLevel(level);
             server.start();
         }
 

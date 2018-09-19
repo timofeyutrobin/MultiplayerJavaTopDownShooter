@@ -15,6 +15,5 @@ public class MainWindow extends JFrame {
         this.getContentPane().add(game);
 
         this.pack();
-        //this.setVisible(true);
     }
 }

@@ -13,7 +13,6 @@ public class GameServer extends Thread {
     static final int PORT = 1331;
 
     private DatagramSocket socket;
-    private Level level;
     private List<Player> connectedPlayers;
     private String ipAddress;
 
@@ -30,10 +29,6 @@ public class GameServer extends Thread {
 
     public String getIpAddress() {
         return ipAddress;
-    }
-
-    public void setLevel(Level level) {
-        this.level = level;
     }
 
     @Override
@@ -84,7 +79,7 @@ public class GameServer extends Thread {
     }
 
     private void handleLogin(Packet0Login packet, InetAddress ipAddress, int port) {
-        Player player = new Player(level, packet.getX(), packet.getY(), packet.getUsername(), ipAddress, port, false);
+        Player player = new Player(null, packet.getX(), packet.getY(), packet.getUsername(), ipAddress, port, false);
         addConnection(player, packet);
     }
 
