@@ -168,7 +168,7 @@ public class Game extends Canvas {
     }
 
     public void mousePressed() {
-        level.getPlayer().mouseClicked();
+        level.getPlayer().mousePressed();
     }
 
     private static void swapBuffers() {

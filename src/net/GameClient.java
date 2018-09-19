@@ -5,6 +5,7 @@ import world.level.Level;
 import world.objects.Player;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.net.*;
 
@@ -87,9 +88,10 @@ public class GameClient extends Thread {
                 handleShoot((Packet3Shoot) packet);
                 break;
             case INVALID_CONNECTION :
-                JOptionPane.showMessageDialog(null, "Player "+level.getPlayer().getUsername()+" is also connected");
-                System.out.println(Thread.currentThread().getName());
-                System.exit(0);
+                EventQueue.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(null, "Player "+level.getPlayer().getUsername()+" is also connected");
+                    System.exit(0);
+                });
         }
     }
 
@@ -101,10 +103,16 @@ public class GameClient extends Thread {
     }
 
     private void handleMove(Packet2Move packet) {
+        if (packet.getUsername().equals(level.getPlayer().getUsername())) {
+            return;
+        }
         level.movePlayer(packet.getUsername(), packet.getX(), packet.getY(), packet.getDirection());
     }
 
     private void handleShoot(Packet3Shoot packet) {
+        if (packet.getUsername().equals(level.getPlayer().getUsername())) {
+            return;
+        }
         level.makePlayerFire(packet.getUsername());
     }
 }

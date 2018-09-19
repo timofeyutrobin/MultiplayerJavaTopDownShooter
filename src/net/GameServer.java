@@ -94,7 +94,6 @@ public class GameServer extends Thread {
     }
 
     private void handleShoot(Packet3Shoot packet) {
-        getPlayer(packet.getUsername()).fire();
         sendDataToAllClients(packet.getData());
     }
 

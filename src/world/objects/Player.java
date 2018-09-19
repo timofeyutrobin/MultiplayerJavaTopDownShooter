@@ -124,6 +124,7 @@ public class Player extends Mob {
         Game.client.sendData(packet.getData());
 
         if (shooting) {
+            fire();
             var shootingPacket = new Packet3Shoot(username);
             Game.client.sendData(shootingPacket.getData());
             shooting = false;
@@ -132,7 +133,6 @@ public class Player extends Mob {
 
     public void fire() {
         new Bullet(level, bulletSpawn.x, bulletSpawn.y, direction);
-        System.out.println(Thread.currentThread().getName());
     }
 
     @Override
@@ -204,7 +204,7 @@ public class Player extends Mob {
         g.drawString(Integer.toString(hp), bodySpritePosition.x, bodySpritePosition.y - (10 + PLAYER_NAME_FONT.getSize()));
     }
 
-    public void mouseClicked() {
+    public void mousePressed() {
         if (hasInput) {
             shooting = true;
         }
