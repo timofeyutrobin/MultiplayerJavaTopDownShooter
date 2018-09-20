@@ -83,7 +83,7 @@ public class GameServer extends Thread {
     }
 
     private void handleMove(Packet2Move packet) {
-        getPlayer(packet.getUsername()).moveAbs(packet.getX(), packet.getY(), packet.getDirection());
+        getPlayer(packet.getUsername()).setPositionByServer(packet.getX(), packet.getY(), packet.getDirection());
         sendDataToAllClients(packet.getData());
     }
 

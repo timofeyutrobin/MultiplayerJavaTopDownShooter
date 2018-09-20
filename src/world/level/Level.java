@@ -56,7 +56,7 @@ public class Level {
     }
 
     public void movePlayer(String username, int x, int y, double direction) {
-        getPlayer(username).moveAbs(x, y, direction);
+        getPlayer(username).setPositionByServer(x, y, direction);
     }
 
     public void makePlayerFire(String username) {

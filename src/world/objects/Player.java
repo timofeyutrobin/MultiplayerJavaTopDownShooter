@@ -34,6 +34,11 @@ public class Player extends Mob {
     private Point bulletSpawn;
     private boolean shooting;
 
+    //new position from server
+    private int newX;
+    private int newY;
+    private double newDirection;
+
     public Player(Level level, int x, int y, String username, InetAddress ipAddress, int port, boolean hasInput) {
         super(level, x, y, GameObjectType.PLAYER, PLAYER_SPEED, PLAYER_HP);
 
@@ -88,51 +93,66 @@ public class Player extends Mob {
 
     @Override
     public void update() {
-        int dx = 0;
-        int dy = 0;
-        if (hasInput) {
-            var mouseX = Game.mouseMotionHandler.getX();
-            var mouseY = Game.mouseMotionHandler.getY();
-            direction = angleTo(x, y, mouseX, mouseY);
-            if (Game.keyInput.getKey(KeyEvent.VK_W)) {
-                dy--;
-            }
-            if (Game.keyInput.getKey(KeyEvent.VK_S)) {
-                dy++;
-            }
-            if (Game.keyInput.getKey(KeyEvent.VK_A)) {
-                dx--;
-            }
-            if (Game.keyInput.getKey(KeyEvent.VK_D)) {
-                dx++;
-            }
-        }
-        if (dx != 0 || dy != 0) {
-            isMoving = true;
-            move(dx * speed, dy * speed);
-        }
-        else {
-            isMoving = false;
-        }
+        if (hasInput) moveByUser();
+        else moveByServer();
         moveBulletSpawn();
 
         animation.update(isMoving);
         body = animation.getCurrentBodySprite();
         feet = animation.getCurrentFeetSprite();
 
-        Packet2Move packet = new Packet2Move(username, x, y, direction);
-        Game.client.sendData(packet.getData());
-
         if (shooting) {
-            fire();
-            var shootingPacket = new Packet3Shoot(username);
-            Game.client.sendData(shootingPacket.getData());
+            new Bullet(level, bulletSpawn.x, bulletSpawn.y, direction);
+
             shooting = false;
         }
+        isMoving = false;
+    }
+
+    private void moveByUser() {
+        int dx = 0;
+        int dy = 0;
+        var mouseX = Game.mouseMotionHandler.getX();
+        var mouseY = Game.mouseMotionHandler.getY();
+        direction = angleTo(x, y, mouseX, mouseY);
+        if (Game.keyInput.getKey(KeyEvent.VK_W)) {
+            dy--;
+        }
+        if (Game.keyInput.getKey(KeyEvent.VK_S)) {
+            dy++;
+        }
+        if (Game.keyInput.getKey(KeyEvent.VK_A)) {
+            dx--;
+        }
+        if (Game.keyInput.getKey(KeyEvent.VK_D)) {
+            dx++;
+        }
+
+        if (dx != 0 || dy != 0) {
+            isMoving = true;
+            move(dx * speed, dy * speed);
+        }
+
+        Packet2Move packet = new Packet2Move(username, x, y, direction);
+        Game.client.sendData(packet.getData());
+    }
+
+    private void moveByServer() {
+        if (x != newX || y != newY) {
+            isMoving = true;
+            x = newX;
+            y = newY;
+        }
+        direction = newDirection;
+
+        shape.x = x - shape.width / 2;
+        shape.y = y - shape.height / 2;
+        bodySpritePosition.move(x - body.getWidth() / 2, y - body.getHeight() / 2);
+        feetSpritePosition.move(x - feet.getWidth() / 2, y - feet.getHeight() / 2);
     }
 
     public void fire() {
-        new Bullet(level, bulletSpawn.x, bulletSpawn.y, direction);
+        shooting = true;
     }
 
     @Override
@@ -151,15 +171,10 @@ public class Player extends Mob {
         }
     }
 
-    public void moveAbs(int x, int y, double direction) {
-        this.x = x;
-        this.y = y;
-        shape.x = x - shape.width / 2;
-        shape.y = y - shape.height / 2;
-        bodySpritePosition.move(x - body.getWidth() / 2, y - body.getHeight() / 2);
-        feetSpritePosition.move(x - feet.getWidth() / 2, y - feet.getHeight() / 2);
-        this.direction = direction;
-        moveBulletSpawn();
+    public void setPositionByServer(int x, int y, double direction) {
+        newX = x;
+        newY = y;
+        newDirection = direction;
     }
 
     private void moveBulletSpawn() {
@@ -206,7 +221,9 @@ public class Player extends Mob {
 
     public void mousePressed() {
         if (hasInput) {
-            shooting = true;
+            fire();
+            var shootingPacket = new Packet3Shoot(username);
+            Game.client.sendData(shootingPacket.getData());
         }
     }
 
