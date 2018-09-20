@@ -105,6 +105,7 @@ public class Game extends Canvas {
         isRunning = true;
 
         gameThread = new Thread(() -> {
+            boolean render;
             long previousTime = System.nanoTime();
             double delta = 0;
             long fpsCounterTime = 0;
@@ -116,11 +117,13 @@ public class Game extends Canvas {
                 previousTime = currentTime;
                 fpsCounterTime += elapsedTime;
 
+                render = false;
                 boolean updateLoop = false;
                 delta += (elapsedTime / UPDATE_INTERVAL);
 
                 while (delta >= 1) {
                     update();
+                    render = true;
                     FPSCounter.incrementUpdates();
                     delta--;
                     //Считаем, сколько раз пытались догнать update
@@ -132,8 +135,10 @@ public class Game extends Canvas {
                         updateLoop = true;
                     }
                 }
-                render();
-                FPSCounter.incrementFrames();
+                if (render) {
+                    render();
+                    FPSCounter.incrementFrames();
+                }
                 if (fpsCounterTime >= SECOND) {
                     FPSCounter.writeStatistics();
                     mainWindow.setTitle(TITLE + " | " + FPSCounter.getStatistics());
