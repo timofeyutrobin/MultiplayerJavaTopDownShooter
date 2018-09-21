@@ -48,9 +48,7 @@ public abstract class GameObject {
         }
         for (var object : level.getObjects()) {
             if (this == object) continue;
-            if (object.shape.intersects(shape.x + dx, shape.y + dy, shape.width, shape.height)) {
-                return true;
-            }
+            return object.shape.intersects(shape.x + dx, shape.y + dy, shape.width, shape.height);
         }
         return false;
     }

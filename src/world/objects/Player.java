@@ -3,7 +3,6 @@ package world.objects;
 import game.Game;
 import net.packets.Packet2Move;
 import net.packets.Packet3Shoot;
-import world.graphics.Animation;
 import world.graphics.PlayerAnimation;
 import world.level.Level;
 
@@ -195,23 +194,7 @@ public class Player extends Mob {
         g.drawImage(feet, feetSpritePosition.x ,feetSpritePosition.y, null);
         g.drawImage(body, bodySpritePosition.x, bodySpritePosition.y, null);
 
-        ////////DEBUG///////////////////////////////////////////////
-
-        /*//drawing sprite bounds
-        g.setColor(Color.GREEN);
-        g.drawRect(bodySpritePosition.x, bodySpritePosition.y, body.getWidth(), body.getHeight());*/
-
         g.setTransform(noTransform);
-
-        /*//drawing physical shape bounds
-        g.setColor(Color.RED);
-        g.drawRect(shape.x, shape.y, shape.width, shape.height);
-
-        //drawing bulletSpawn
-        g.setColor(Color.BLUE);
-        g.fillOval(bulletSpawn.x - 5, bulletSpawn.y - 5, 10, 10);*/
-
-        /////////////////////////////////////////////////////////////
 
         g.setColor(Color.WHITE);
         g.setFont(PLAYER_NAME_FONT);
