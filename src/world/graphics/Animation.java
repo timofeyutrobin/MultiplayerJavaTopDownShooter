@@ -10,10 +10,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class Animation {
-    public static final Animation FEET_IDLE_ANIMATION = createAnimation("/animations/player_feet_idle.anim");
-    public static final Animation FEET_RUN_ANIMATION = createAnimation("/animations/player_feet_move.anim");
-    public static final Animation BODY_MOVE_ANIMATION = createAnimation("/animations/player_body_move.anim");
-    public static final Animation BODY_IDLE_ANIMATION = createAnimation("/animations/player_body_idle.anim");
+    static final Animation FEET_IDLE_ANIMATION = createAnimation("/animations/player_feet_idle.anim");
+    static final Animation FEET_RUN_ANIMATION = createAnimation("/animations/player_feet_move.anim");
+    static final Animation BODY_MOVE_ANIMATION = createAnimation("/animations/player_body_move.anim");
+    static final Animation BODY_IDLE_ANIMATION = createAnimation("/animations/player_body_idle.anim");
 
     private final BufferedImage[] frames;
 
@@ -36,6 +36,13 @@ public class Animation {
         }
         this.frames = frames;
         currentFrame = 0;
+    }
+
+    public Animation(Animation toClone) {
+        this.frames = toClone.frames;
+        this.updatesPerSecond = toClone.updatesPerSecond;
+        this.currentFrame = 0;
+        this.updatesCount = 0;
     }
 
     public void update() {

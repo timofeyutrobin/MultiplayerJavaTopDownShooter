@@ -3,6 +3,7 @@ package world.objects;
 import game.Game;
 import net.packets.Packet2Move;
 import net.packets.Packet3Shoot;
+import world.graphics.Animation;
 import world.graphics.PlayerAnimation;
 import world.level.Level;
 

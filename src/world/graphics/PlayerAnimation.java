@@ -12,13 +12,13 @@ public class PlayerAnimation {
     private BufferedImage currentFeetSprite;
 
     public PlayerAnimation(Animation feetRun, Animation bodyIdle, Animation bodyRun, Animation feetIdle) {
-        this.feetRun = feetRun;
-        this.bodyIdle = bodyIdle;
-        this.bodyRun = bodyRun;
-        this.feetIdle = feetIdle;
+        this.feetRun = new Animation(feetRun);
+        this.bodyIdle = new Animation(bodyIdle);
+        this.bodyRun = new Animation(bodyRun);
+        this.feetIdle = new Animation(feetIdle);
 
-        currentBodySprite = bodyIdle.getCurrentFrame();
-        currentFeetSprite = feetIdle.getCurrentFrame();
+        currentBodySprite = this.bodyIdle.getCurrentFrame();
+        currentFeetSprite = this.feetIdle.getCurrentFrame();
     }
 
     public PlayerAnimation() {
