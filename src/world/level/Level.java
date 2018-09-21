@@ -42,13 +42,7 @@ public class Level {
     }
 
     public void removePlayer(String username) {
-        for (var object : objects) {
-            if (object.getType() == GameObject.GameObjectType.PLAYER
-                    && ((Player) object).getUsername().equals(username))
-            {
-                object.delete();
-            }
-        }
+        getPlayer(username).delete();
     }
 
     public Player getPlayer() {
