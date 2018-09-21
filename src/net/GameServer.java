@@ -107,8 +107,8 @@ public class GameServer extends Thread {
     }
 
     private void removeConnection(Packet1Disconnect packet) {
-        sendDataToAllClients(packet.getData());
         connectedPlayers.remove(getPlayer(packet.getUsername()));
+        sendDataToAllClients(packet.getData());
     }
 
     private Player getPlayer(String username) {
