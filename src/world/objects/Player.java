@@ -13,9 +13,9 @@ import java.awt.image.BufferedImage;
 import java.net.InetAddress;
 
 public class Player extends Mob {
-    public static final int PLAYER_SPEED = 7;
-    public static final int PLAYER_HP = 100;
-    public static final Font PLAYER_NAME_FONT = new Font("Consolas", Font.PLAIN, 18);
+    private static final int PLAYER_SPEED = 7;
+    private static final int PLAYER_HP = 100;
+    private static final Font PLAYER_NAME_FONT = new Font("Consolas", Font.PLAIN, 18);
 
     private BufferedImage body;
     private BufferedImage feet;
@@ -73,10 +73,6 @@ public class Player extends Mob {
 
     public int getY() {
         return y;
-    }
-
-    public double getDirection() {
-        return direction;
     }
 
     public InetAddress getIpAddress() {
