@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class Animation {
+class Animation {
     static final Animation FEET_IDLE_ANIMATION = createAnimation("/animations/player_feet_idle.anim");
     static final Animation FEET_RUN_ANIMATION = createAnimation("/animations/player_feet_move.anim");
     static final Animation BODY_MOVE_ANIMATION = createAnimation("/animations/player_body_move.anim");
@@ -21,7 +21,7 @@ public class Animation {
     private int updatesPerSecond;
     private int updatesCount;
 
-    public Animation(BufferedImage[] frames, int rate) {
+    Animation(BufferedImage[] frames, int rate) {
         if (rate == 0) {
             updatesPerSecond = 0;
         }
@@ -38,14 +38,14 @@ public class Animation {
         currentFrame = 0;
     }
 
-    public Animation(Animation toClone) {
+    Animation(Animation toClone) {
         this.frames = toClone.frames;
         this.updatesPerSecond = toClone.updatesPerSecond;
         this.currentFrame = 0;
         this.updatesCount = 0;
     }
 
-    public void update() {
+    void update() {
         updatesCount++;
         if (updatesCount >= updatesPerSecond) {
             currentFrame++;
@@ -56,7 +56,7 @@ public class Animation {
         }
     }
 
-    public BufferedImage getCurrentFrame() {
+    BufferedImage getCurrentFrame() {
         return frames[currentFrame];
     }
 
