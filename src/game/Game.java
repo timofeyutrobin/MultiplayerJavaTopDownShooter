@@ -8,6 +8,7 @@ import net.GameServer;
 import net.packets.Packet0Login;
 import net.packets.Packet1Disconnect;
 import tools.FPSCounter;
+import tools.ImageUtils;
 import window.MainWindow;
 import world.level.Level;
 import world.level.TileMap;
@@ -75,18 +76,6 @@ public class Game extends Canvas {
         //отправляем серверу данные о том, что новый игрок подключился
         Packet0Login loginPacket = new Packet0Login(player.getUsername(), player.getX(), player.getY());
         client.sendData(loginPacket.getData());
-
-        /*// Aim 16 x 16 pixel cursor image.
-        var cursorImg = ImageUtils.loadImageFromRes("/aim.png");
-        cursorImg = ImageUtils.resize(cursorImg, 32, 32);
-
-        // Create a new aim cursor.
-        var aimCursor = Toolkit.getDefaultToolkit().createCustomCursor(
-                cursorImg, new Point(0, 0), "aim cursor"
-        );
-
-        // Set the aim cursor to the JFrame.
-        mainWindow.getContentPane().setCursor(aimCursor);*/
 
         mainWindow.addWindowListener(new WindowAdapter() {
             @Override

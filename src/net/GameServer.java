@@ -91,7 +91,7 @@ public class GameServer extends Thread {
         sendDataToAllClients(packet.getData());
     }
 
-    public void sendData(byte[] data, InetAddress ipAddress, int port) {
+    private void sendData(byte[] data, InetAddress ipAddress, int port) {
         DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, port);
         try {
             socket.send(packet);
@@ -100,7 +100,7 @@ public class GameServer extends Thread {
         }
     }
 
-    public void sendDataToAllClients(byte[] data) {
+    private void sendDataToAllClients(byte[] data) {
         for (var player : connectedPlayers) {
             sendData(data, player.getIpAddress(), player.getPort());
         }
@@ -133,8 +133,8 @@ public class GameServer extends Thread {
                 sendData(packet.getData(), p.getIpAddress(), p.getPort());
 
                 //отправляем новому игроку данные обо всех игроках на карте
-                packet = new Packet0Login(p.getUsername(), p.getX(), p.getY());
-                sendData(packet.getData(), player.getIpAddress(), player.getPort());
+                var packetCurrentPlayer = new Packet0Login(p.getUsername(), p.getX(), p.getY());
+                sendData(packetCurrentPlayer.getData(), player.getIpAddress(), player.getPort());
             }
         }
         if (!alreadyConnected) {
