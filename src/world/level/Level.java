@@ -29,7 +29,7 @@ public class Level {
         addObject(player);
     }
 
-    public synchronized List<GameObject> getObjects() {
+    public List<GameObject> getObjects() {
         return objects;
     }
 
@@ -58,7 +58,7 @@ public class Level {
     }
 
     private Player getPlayer(String username) {
-        for (var object : getObjects()) {
+        for (var object : objects) {
             if (object.getType() == GameObject.GameObjectType.PLAYER &&
                     ((Player)object).getUsername().equals(username))
             {
