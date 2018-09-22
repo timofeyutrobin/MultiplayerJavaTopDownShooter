@@ -8,7 +8,6 @@ import net.GameServer;
 import net.packets.Packet0Login;
 import net.packets.Packet1Disconnect;
 import tools.FPSCounter;
-import tools.ImageUtils;
 import window.MainWindow;
 import world.level.Level;
 import world.level.TileMap;
