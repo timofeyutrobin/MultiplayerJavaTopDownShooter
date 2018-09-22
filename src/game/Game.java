@@ -80,6 +80,7 @@ public class Game extends Canvas {
         mainWindow.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                level.getObjects().remove(player);
                 Packet1Disconnect packet = new Packet1Disconnect(player.getUsername());
                 client.sendData(packet.getData());
             }
