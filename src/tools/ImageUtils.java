@@ -44,16 +44,4 @@ public abstract class ImageUtils {
         }
         return image;
     }
-
-    public static BufferedImage getReversedImage(BufferedImage image) {
-        var reversedImage = ImageUtils.copyImage(image);
-
-        var tx = AffineTransform.getScaleInstance(-1, 1);
-        tx.translate(-reversedImage.getWidth(null), 0);
-
-        var op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-        reversedImage = op.filter(reversedImage, null);
-
-        return reversedImage;
-    }
 }

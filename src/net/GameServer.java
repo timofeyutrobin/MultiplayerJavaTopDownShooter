@@ -56,14 +56,10 @@ public class GameServer extends Thread {
                 break;
             case LOGIN :
                 packet = new Packet0Login(data);
-                System.out.println("["+address.getHostAddress()+":"+port+"] "
-                        + ((Packet0Login)packet).getUsername()+" has connected...");
                 handleLogin((Packet0Login) packet, address, port);
                 break;
             case DISCONNECT :
                 packet = new Packet1Disconnect(data);
-                System.out.println("["+address.getHostAddress()+":"+port+"] "
-                        + ((Packet1Disconnect)packet).getUsername()+" has left...");
                 removeConnection((Packet1Disconnect) packet);
                 break;
             case MOVE :

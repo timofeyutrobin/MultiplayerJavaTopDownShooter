@@ -75,8 +75,6 @@ public class GameClient extends Thread {
                 break;
             case DISCONNECT :
                 packet = new Packet1Disconnect(data);
-                System.out.println("["+address.getHostAddress()+":"+port+"] "
-                        + ((Packet1Disconnect)packet).getUsername()+" has left the world...");
                 level.removePlayer(((Packet1Disconnect) packet).getUsername());
                 break;
             case MOVE :
@@ -96,8 +94,6 @@ public class GameClient extends Thread {
     }
 
     private void handleLogin(Packet0Login packet, InetAddress address, int port) {
-        System.out.println("["+address.getHostAddress()+":"+port+"] "
-                + packet.getUsername()+" has joined the game...");
         Player player = new Player(level, packet.getX(), packet.getY(), packet.getUsername(), address, port, false);
         level.addObject(player);
     }

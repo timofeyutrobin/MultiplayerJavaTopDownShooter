@@ -29,7 +29,6 @@ public class TileMap {
 
         walls = new ArrayList<>();
         tiles = new Tile[tileMap.length];
-        // TODO: 09.09.2018 Оптимизация: если есть множество wall выставленных в ряд, сделать из них один объект rectangle
         for (int i = 0; i < tileMap.length; i++) {
             if (tileMap[i] == FLOOR) {
                 tiles[i] = floorTile;
