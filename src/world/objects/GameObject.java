@@ -38,7 +38,7 @@ public abstract class GameObject {
     }
 
     public abstract void update();
-    public abstract void render(Graphics2D g);
+    public abstract void render(Graphics2D g, int xOffset, int yOffset);
 
     protected boolean hasCollided(int dx, int dy) {
         for (var wall : level.getTileMap().getWalls()) {

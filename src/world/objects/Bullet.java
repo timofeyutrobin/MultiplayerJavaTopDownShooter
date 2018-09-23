@@ -59,8 +59,8 @@ public class Bullet extends GameObject {
     }
 
     @Override
-    public void render(Graphics2D g) {
+    public void render(Graphics2D g, int xOffset, int yOffset) {
         g.setColor(Color.WHITE);
-        g.fillOval(shape.x, shape.y, BULLET_SIZE, BULLET_SIZE);
+        g.fillOval(shape.x - xOffset, shape.y - yOffset, BULLET_SIZE, BULLET_SIZE);
     }
 }

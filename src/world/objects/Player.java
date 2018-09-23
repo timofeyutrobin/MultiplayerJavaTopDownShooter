@@ -110,7 +110,7 @@ public class Player extends Mob {
         int dy = 0;
         var mouseX = Game.mouseMotionHandler.getX();
         var mouseY = Game.mouseMotionHandler.getY();
-        direction = angleTo(x, y, mouseX, mouseY);
+        direction = angleTo(Game.SCREEN_CENTER_X, Game.SCREEN_CENTER_Y, mouseX, mouseY);
         if (Game.keyInput.getKey(KeyEvent.VK_W)) {
             dy--;
         }
@@ -164,6 +164,8 @@ public class Player extends Mob {
             shape.translate(dx, dy);
             bodySpritePosition.translate(dx, dy);
             feetSpritePosition.translate(dx, dy);
+
+            level.moveCamera(dx ,dy);
         }
     }
 
@@ -181,22 +183,27 @@ public class Player extends Mob {
     }
 
     @Override
-    public void render(Graphics2D g) {
+    public void render(Graphics2D g, int xOffset, int yOffset) {
+        var bodySpriteOnScreenX = bodySpritePosition.x - xOffset;
+        var bodySpriteOnScreenY = bodySpritePosition.y - yOffset;
+        var feetSpriteOnScreenX = feetSpritePosition.x - xOffset;
+        var feetSpriteOnScreenY = feetSpritePosition.y - yOffset;
+
         AffineTransform noTransform = g.getTransform();
         noTransform.rotate(0, 0, 0);
 
-        g.rotate(direction, x, y);
+        g.rotate(direction, x - xOffset, y - yOffset);
 
-        g.drawImage(feet, feetSpritePosition.x ,feetSpritePosition.y, null);
-        g.drawImage(body, bodySpritePosition.x, bodySpritePosition.y, null);
+        g.drawImage(feet, feetSpriteOnScreenX, feetSpriteOnScreenY, null);
+        g.drawImage(body, bodySpriteOnScreenX, bodySpriteOnScreenY, null);
 
         g.setTransform(noTransform);
 
         g.setColor(Color.WHITE);
         g.setFont(PLAYER_NAME_FONT);
-        g.drawString(username, bodySpritePosition.x, bodySpritePosition.y - 10);
+        g.drawString(username, bodySpriteOnScreenX, bodySpriteOnScreenY - 10);
         g.setColor(Color.GREEN);
-        g.drawString(Integer.toString(hp), bodySpritePosition.x, bodySpritePosition.y - (10 + PLAYER_NAME_FONT.getSize()));
+        g.drawString(Integer.toString(hp), bodySpriteOnScreenX, bodySpriteOnScreenY - (10 + PLAYER_NAME_FONT.getSize()));
     }
 
     public void mousePressed() {

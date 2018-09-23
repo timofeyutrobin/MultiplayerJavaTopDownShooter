@@ -23,6 +23,8 @@ public class Game extends Canvas {
     public static final String TITLE               = "Amazing Game";
     public static final int    WIDTH               = 960;
     public static final int    HEIGHT              = 540;
+    public static final int    SCREEN_CENTER_X     = WIDTH / 2;
+    public static final int    SCREEN_CENTER_Y     = HEIGHT / 2;
     public static final double UPDATE_RATE         = 60.0;
     public static final long   SECOND              = 1_000_000_000L;
     public static final double UPDATE_INTERVAL     = SECOND / UPDATE_RATE;

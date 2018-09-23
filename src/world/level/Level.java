@@ -15,6 +15,10 @@ public class Level {
 
     private final Player player;
 
+    //камера
+    private int xOffset;
+    private int yOffset;
+
     public Level(TileMap tileMap) {
         this.tileMap = tileMap;
         objects = new ArrayList<>();
@@ -27,6 +31,10 @@ public class Level {
         var player = new Player(this, 100, 200, username, Game.client.getIpAddress(), Game.client.getPort(), true);
         this.player = player;
         addObject(player);
+
+        //игрок находится в центре экрана
+        xOffset = player.getX() - Game.SCREEN_CENTER_X;
+        yOffset = player.getY() - Game.SCREEN_CENTER_Y;
     }
 
     public List<GameObject> getObjects() {
@@ -47,6 +55,11 @@ public class Level {
 
     public Player getPlayer() {
         return player;
+    }
+
+    public void moveCamera(int dx, int dy) {
+        xOffset += dx;
+        yOffset += dy;
     }
 
     public void movePlayer(String username, int x, int y, double direction) {
@@ -80,9 +93,9 @@ public class Level {
     }
 
     public synchronized void render(Graphics2D g) {
-        tileMap.render(g);
+        tileMap.render(g, xOffset, yOffset);
         for (var object : objects) {
-            object.render(g);
+            object.render(g, xOffset, yOffset);
         }
     }
 }

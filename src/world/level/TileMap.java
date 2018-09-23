@@ -41,9 +41,16 @@ public class TileMap {
         }
     }
 
-    public void render(Graphics2D g) {
+    void render(Graphics2D g, int xOffset, int yOffset) {
         for (int i = 0; i < tiles.length; i++) {
-            tiles[i].render(g, (i % mapWidth) * tileSize, (i / mapWidth) * tileSize);
+            int tileScreenX = ((i % mapWidth) * tileSize) - xOffset;
+            int tileScreenY = ((i / mapWidth) * tileSize) - yOffset;
+
+            //рисуются только тайлы в пределах экрана
+            if (tileScreenX < -tileSize || tileScreenX > Game.WIDTH || tileScreenY < -tileSize || tileScreenY > Game.HEIGHT) {
+                continue;
+            }
+            tiles[i].render(g, ((i % mapWidth) * tileSize) - xOffset, ((i / mapWidth) * tileSize) - yOffset);
         }
     }
 
