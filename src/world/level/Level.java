@@ -6,10 +6,14 @@ import world.objects.Player;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Level {
+    private static final GradientPaint BG_GRADIENT = new GradientPaint(0, 0, Color.BLACK,
+            Game.WIDTH, Game.HEIGHT, Color.LIGHT_GRAY);
+
     private final TileMap tileMap;
     private final ArrayList<GameObject> objects;
 
@@ -93,6 +97,8 @@ public class Level {
     }
 
     public synchronized void render(Graphics2D g) {
+        g.setPaint(BG_GRADIENT);
+        g.fill(new Rectangle2D.Double(0,0,Game.WIDTH,Game.HEIGHT));
         tileMap.render(g, xOffset, yOffset);
         for (var object : objects) {
             object.render(g, xOffset, yOffset);
