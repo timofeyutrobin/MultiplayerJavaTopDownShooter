@@ -42,13 +42,13 @@ public abstract class GameObject {
 
     protected boolean hasCollided(int dx, int dy) {
         for (var wall : level.getTileMap().getWalls()) {
-            if (wall.intersects(shape.x + dx, shape.y + dy, shape.width, shape.height)) {
+            if (wall.intersects(shape.x + dx, shape.y + dy, shape.width, shape.height))
                 return true;
-            }
         }
         for (var object : level.getObjects()) {
             if (this == object) continue;
-            return object.shape.intersects(shape.x + dx, shape.y + dy, shape.width, shape.height);
+            if (object.shape.intersects(shape.x + dx, shape.y + dy, shape.width, shape.height))
+                return true;
         }
         return false;
     }
