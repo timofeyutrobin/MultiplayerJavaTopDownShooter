@@ -4,7 +4,6 @@ import game.Game;
 import world.objects.GameObject;
 import world.objects.Player;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -18,8 +17,6 @@ public class Level {
     private final TileMap tileMap;
     private final ArrayList<GameObject> objects;
 
-    private final Player player;
-
     //камера
     private int xOffset;
     private int yOffset;
@@ -27,19 +24,6 @@ public class Level {
     public Level(TileMap tileMap) {
         this.tileMap = tileMap;
         objects = new ArrayList<>();
-
-        var username = JOptionPane.showInputDialog("Enter your username");
-        if (username == null) {
-            System.exit(0);
-        }
-
-        var player = new Player(this, 100, 200, username, Game.client.getIpAddress(), Game.client.getPort(), true);
-        this.player = player;
-        addObject(player);
-
-        //игрок находится в центре экрана
-        xOffset = player.getX() - Game.SCREEN_CENTER_X;
-        yOffset = player.getY() - Game.SCREEN_CENTER_Y;
     }
 
     public List<GameObject> getObjects() {
@@ -58,8 +42,9 @@ public class Level {
         getPlayer(username).delete();
     }
 
-    public Player getPlayer() {
-        return player;
+    public void setCameraPosition(int x, int y) {
+        xOffset = x - Game.SCREEN_CENTER_X;
+        yOffset = y - Game.SCREEN_CENTER_Y;
     }
 
     public void moveCamera(int dx, int dy) {

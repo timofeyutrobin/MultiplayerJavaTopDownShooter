@@ -1,8 +1,8 @@
 package net;
 
 import net.packets.*;
-import world.objects.Player;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
@@ -10,12 +10,17 @@ import java.util.List;
 
 public class GameServer extends Thread {
     static final int PORT = 1331;
+    static final int PLAYER_LIMIT = 4;
 
     private DatagramSocket socket;
-    private List<Player> connectedPlayers;
+    private List<ServerPlayer> connectedPlayers;
+    private List<Point> spawnPoints;
     private String ipAddress;
 
-    public GameServer() {
+    public GameServer(List<Point> spawnPoints) {
+        if (spawnPoints.size() < PLAYER_LIMIT)
+            throw new IllegalArgumentException("Not enough spawn points");
+        this.spawnPoints = spawnPoints;
         this.connectedPlayers = new ArrayList<>();
         try {
             ipAddress = InetAddress.getLocalHost().getHostAddress();
@@ -74,12 +79,24 @@ public class GameServer extends Thread {
     }
 
     private void handleLogin(Packet0Login packet, InetAddress ipAddress, int port) {
-        Player player = new Player(null, packet.getX(), packet.getY(), packet.getUsername(), ipAddress, port, false);
-        addConnection(player, packet);
+        if (connectedPlayers.size() >= PLAYER_LIMIT) {
+            var invalidConnectionPacket = new Packet4InvalidConnection("Server is full");
+            sendData(invalidConnectionPacket.getData(), ipAddress, port);
+        }
+        else {
+            var playerSpawnPosition = getCurrentSpawnPoint();
+
+            var loginPacketBack = new Packet0Login(packet.getUsername(), playerSpawnPosition.x, playerSpawnPosition.y, true);
+            sendData(loginPacketBack.getData(), ipAddress, port);
+
+            var loginPacketNew = new Packet0Login(packet.getUsername(), playerSpawnPosition.x, playerSpawnPosition.y, false);
+            var player = new ServerPlayer(playerSpawnPosition.x, playerSpawnPosition.y, packet.getUsername(), ipAddress, port);
+            addConnection(player, loginPacketNew);
+        }
     }
 
     private void handleMove(Packet2Move packet) {
-        getPlayer(packet.getUsername()).setPositionByServer(packet.getX(), packet.getY(), packet.getDirection());
+        getPlayer(packet.getUsername()).move(packet.getX(), packet.getY());
         sendDataToAllClients(packet.getData());
     }
 
@@ -98,7 +115,7 @@ public class GameServer extends Thread {
 
     private void sendDataToAllClients(byte[] data) {
         for (var player : connectedPlayers) {
-            sendData(data, player.getIpAddress(), player.getPort());
+            sendData(data, player.ipAddress, player.port);
         }
     }
 
@@ -107,30 +124,54 @@ public class GameServer extends Thread {
         sendDataToAllClients(packet.getData());
     }
 
-    private Player getPlayer(String username) {
+    private ServerPlayer getPlayer(String username) {
         for (var player : connectedPlayers) {
-            if (player.getUsername().equals(username)) {
+            if (player.username.equals(username)) {
                 return player;
             }
         }
         throw new IllegalArgumentException("Player " + username + " doesn't exist");
     }
 
-    private void addConnection(Player player, Packet0Login packet) {
+    private Point getCurrentSpawnPoint() {
+        if (connectedPlayers.isEmpty())
+            return spawnPoints.get(0);
+
+        var spawnPointIndex = 0;
+        var maxDist = 0.0;
+        var min = new double[spawnPoints.size()];
+        for (int i = 0; i < spawnPoints.size(); i++) {
+            var x = spawnPoints.get(i).x;
+            var y = spawnPoints.get(i).y;
+            min[i] = Integer.MAX_VALUE;
+            for (var player : connectedPlayers) {
+                var dist = Math.abs(x - player.x) + Math.abs(y - player.y);
+                if (dist < min[i])
+                    min[i] = dist;
+            }
+            if (min[i] >= maxDist) {
+                maxDist = min[i];
+                spawnPointIndex = i;
+            }
+        }
+        return spawnPoints.get(spawnPointIndex);
+    }
+
+    private void addConnection(ServerPlayer player, Packet0Login packet) {
         boolean alreadyConnected = false;
         for (var p : connectedPlayers) {
-            if (player.getUsername().equalsIgnoreCase(p.getUsername())) {
+            if (player.username.equalsIgnoreCase(p.username)) {
                 alreadyConnected = true;
-                var invalidConnectionPacket = new Packet4InvalidConnection();
-                sendData(invalidConnectionPacket.getData(), player.getIpAddress(), player.getPort());
+                var invalidConnectionPacket = new Packet4InvalidConnection("Player"+player.username+"is also connected");
+                sendData(invalidConnectionPacket.getData(), player.ipAddress, player.port);
             }
             else {
                 //отправляем каждому игроку данные о том, что новый игрок подключился к серверу
-                sendData(packet.getData(), p.getIpAddress(), p.getPort());
+                sendData(packet.getData(), p.ipAddress, p.port);
 
                 //отправляем новому игроку данные обо всех игроках на карте
-                var packetCurrentPlayer = new Packet0Login(p.getUsername(), p.getX(), p.getY());
-                sendData(packetCurrentPlayer.getData(), player.getIpAddress(), player.getPort());
+                var packetCurrentPlayer = new Packet0Login(p.username, p.x, p.y, false);
+                sendData(packetCurrentPlayer.getData(), player.ipAddress, player.port);
             }
         }
         if (!alreadyConnected) {

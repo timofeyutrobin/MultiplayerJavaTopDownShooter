@@ -11,6 +11,7 @@ import tools.FPSCounter;
 import window.MainWindow;
 import world.level.Level;
 import world.level.TileMap;
+import world.objects.Player;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,6 +19,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 public class Game extends Canvas {
     public static final String TITLE               = "Amazing Game";
@@ -32,8 +34,8 @@ public class Game extends Canvas {
     public static final KeyInput keyInput = new KeyInput();
     public static final MouseMotionHandler mouseMotionHandler = new MouseMotionHandler();
 
-    public static final GameServer server = createServer();
-    public static final GameClient client = createClient();
+    public static GameClient client;
+    private static GameServer server;
 
     private static JFrame mainWindow;
 
@@ -46,7 +48,8 @@ public class Game extends Canvas {
     private static BufferedImage buffer;
 
     //game
-    private Level level;
+    private final Level level;
+    private final Player player;
 
     public Game() {
         setSize(WIDTH, HEIGHT);
@@ -59,24 +62,39 @@ public class Game extends Canvas {
         createBufferStrategy(3);
         bs = this.getBufferStrategy();
 
-        //input setup
-        mainWindow.add(keyInput);
-        this.addMouseMotionListener(mouseMotionHandler);
-        this.addMouseListener(new MouseHandler(this));
-
         level = new Level(TileMap.loadTileMapFromFile("testLevel.lvl"));
+        createServer(level.getTileMap().getSpawnPoints());
+        createClient(level);
 
-        client.setLevel(level);
         client.start();
         if (server != null) {
             server.start();
         }
 
-        var player = level.getPlayer();
+        var username = JOptionPane.showInputDialog("Enter your username");
+        if (username == null) {
+            System.exit(0);
+        }
 
-        //отправляем серверу данные о том, что новый игрок подключился
-        Packet0Login loginPacket = new Packet0Login(player.getUsername(), player.getX(), player.getY());
+        var loginPacket = new Packet0Login(username);
         client.sendData(loginPacket.getData());
+
+        //ждем, пока клиент создаст игрока в правильном месте карты или получит сообщение об ошибке
+        while (client.getMainPlayer() == null && !client.isError()) {
+            try {
+                Thread.sleep(10);
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        player = client.getMainPlayer();
+
+        //input setup
+        mainWindow.add(keyInput);
+        this.addMouseMotionListener(mouseMotionHandler);
+        this.addMouseListener(new MouseHandler(this));
 
         mainWindow.addWindowListener(new WindowAdapter() {
             @Override
@@ -163,7 +181,7 @@ public class Game extends Canvas {
     }
 
     public void mousePressed() {
-        level.getPlayer().mousePressed();
+        player.mousePressed();
     }
 
     private static void swapBuffers() {
@@ -172,19 +190,16 @@ public class Game extends Canvas {
         bs.show();
     }
 
-    private static GameServer createServer() {
+    private void createServer(List<Point> spawnPoints) {
         if (JOptionPane.showConfirmDialog(null,"Do you want to run a server?") == 0) {
-            var server = new GameServer();
+            server = new GameServer(spawnPoints);
             server.setName("ServerThread");
 
             JOptionPane.showMessageDialog(null, "Server IP-Address: " + server.getIpAddress());
-
-            return server;
         }
-        return null;
     }
 
-    private static GameClient createClient() {
+    private void createClient(Level level) {
         String serverIpAddress;
         if (server != null) {
             serverIpAddress = server.getIpAddress();
@@ -195,8 +210,7 @@ public class Game extends Canvas {
                 System.exit(0);
             }
         }
-        var client = new GameClient(serverIpAddress);
+        client = new GameClient(level, serverIpAddress);
         client.setName("ClientThread");
-        return client;
     }
 }

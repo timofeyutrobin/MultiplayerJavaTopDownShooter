@@ -14,13 +14,15 @@ public class TileMap {
     //используются в файле уровня
     private static final int FLOOR = 0;
     private static final int WALL = 1;
+    private static final int SPAWN = 2;
 
     private final Tile[] tiles;
-    private final int tileSize;
     private final List<Rectangle> walls;
+    private List<Point> spawnPoints;
+    private final int tileSize;
     private final int mapWidth;
 
-    public TileMap(int[] tileMap, int mapWidth, int tileSize) {
+    private TileMap(int[] tileMap, int mapWidth, int tileSize) {
         this.mapWidth = mapWidth;
         this.tileSize = tileSize;
 
@@ -28,15 +30,22 @@ public class TileMap {
         var wallTile = new Tile(Tile.TileTypes.WALL, tileSize);
 
         walls = new ArrayList<>();
+        spawnPoints = new ArrayList<>();
         tiles = new Tile[tileMap.length];
         for (int i = 0; i < tileMap.length; i++) {
+            var tileXPosition = (i % mapWidth) * tileSize;
+            var tileYPosition = (i / mapWidth) * tileSize;
             if (tileMap[i] == FLOOR) {
                 tiles[i] = floorTile;
             }
             if (tileMap[i] == WALL) {
                 tiles[i] = wallTile;
-                var rect = new Rectangle((i % mapWidth) * tileSize, (i / mapWidth) * tileSize, tileSize, tileSize);
+                var rect = new Rectangle(tileXPosition, tileYPosition, tileSize, tileSize);
                 walls.add(rect);
+            }
+            if (tileMap[i] == SPAWN) {
+                tiles[i] = floorTile;
+                spawnPoints.add(new Point(tileXPosition + tileSize / 2, tileYPosition + tileSize / 2));
             }
         }
     }
@@ -50,12 +59,16 @@ public class TileMap {
             if (tileScreenX < -tileSize || tileScreenX > Game.WIDTH || tileScreenY < -tileSize || tileScreenY > Game.HEIGHT) {
                 continue;
             }
-            tiles[i].render(g, ((i % mapWidth) * tileSize) - xOffset, ((i / mapWidth) * tileSize) - yOffset);
+            tiles[i].render(g, tileScreenX, tileScreenY);
         }
     }
 
     public List<Rectangle> getWalls() {
         return walls;
+    }
+
+    public List<Point> getSpawnPoints() {
+        return spawnPoints;
     }
 
     public static TileMap loadTileMapFromFile(String levelFileName) {

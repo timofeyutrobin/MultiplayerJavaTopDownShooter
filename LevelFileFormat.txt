@@ -1,4 +1,4 @@
 [tileSize]
 [levelWidth] = n
 [levelHeight] = m
-[n*m matrix of tiles] 0 = FLOOR, 1 = WALL
+[n*m matrix of tiles] 0 = FLOOR, 1 = WALL, 2 = SPAWN
