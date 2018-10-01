@@ -175,7 +175,12 @@ public class Game extends Canvas {
             EventQueue.invokeLater(() -> {
                 var disconnectPacket = new Packet1Disconnect(player.getUsername());
                 client.sendData(disconnectPacket.getData());
-                JOptionPane.showMessageDialog(null, "You died");
+                client.stopClient();
+                mainWindow.dispose();
+                String message;
+                if (server != null) message = "You died. Press OK to close the server.";
+                else message = "You died";
+                JOptionPane.showMessageDialog(null, message);
                 System.exit(0);
             });
             stop();

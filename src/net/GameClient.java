@@ -42,12 +42,19 @@ public class GameClient extends Thread {
                 showErrorAndExit("Server request timeout");
                 e.printStackTrace();
             }
+            catch (SocketException e) {
+                break;
+            }
             catch (IOException e) {
                 showErrorAndExit("Unable to receive data from server. IP-Address may be incorrect");
                 e.printStackTrace();
             }
             parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
         }
+    }
+
+    public void stopClient() {
+        socket.close();
     }
 
     public void sendData(byte[] data) {
