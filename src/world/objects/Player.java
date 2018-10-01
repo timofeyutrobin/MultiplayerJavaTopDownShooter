@@ -1,10 +1,12 @@
 package world.objects;
 
 import game.Game;
+import net.packets.Packet1Disconnect;
 import net.packets.Packet3PlayerState;
 import world.graphics.PlayerAnimation;
 import world.level.Level;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
@@ -21,6 +23,7 @@ public class Player extends Mob {
     private Point feetSpritePosition;
     private double direction;
     private boolean isMoving;
+    private boolean dead;
 
     private PlayerAnimation animation;
 
@@ -62,6 +65,10 @@ public class Player extends Mob {
         return username;
     }
 
+    public boolean isDead() {
+        return dead;
+    }
+
     void setDamage(int damage) {
         hp -= damage;
     }
@@ -76,6 +83,8 @@ public class Player extends Mob {
         animation.update(isMoving);
         body = animation.getCurrentBodySprite();
         feet = animation.getCurrentFeetSprite();
+
+        if (hp <= 0) dead = true;
 
         if (isMainPlayer) {
             var statePacket = new Packet3PlayerState(username, x, y, direction, hp, shooting);

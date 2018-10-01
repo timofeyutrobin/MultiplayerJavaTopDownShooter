@@ -89,6 +89,7 @@ public class GameServer extends Thread {
                     playerSpawnPosition.x, playerSpawnPosition.y, packet.getHp(), false);
             var player = new ServerPlayer(playerSpawnPosition.x, playerSpawnPosition.y, packet.getHp(),
                     packet.getUsername(), ipAddress, port);
+
             addConnection(player, loginPacketNew);
         }
     }

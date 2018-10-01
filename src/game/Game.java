@@ -171,6 +171,15 @@ public class Game extends Canvas {
     }
 
     private void update() {
+        if (player.isDead()) {
+            EventQueue.invokeLater(() -> {
+                var disconnectPacket = new Packet1Disconnect(player.getUsername());
+                client.sendData(disconnectPacket.getData());
+                JOptionPane.showMessageDialog(null, "You died");
+                System.exit(0);
+            });
+            stop();
+        }
         level.update();
     }
 
