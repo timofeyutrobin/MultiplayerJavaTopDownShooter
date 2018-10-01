@@ -87,28 +87,23 @@ public class GameClient extends Thread {
                 break;
             case LOGIN :
                 packet = new Packet0Login(data);
-                handleLogin((Packet0Login) packet, address, port);
+                handleLogin((Packet0Login) packet);
                 break;
             case DISCONNECT :
                 packet = new Packet1Disconnect(data);
                 level.removePlayer(((Packet1Disconnect) packet).getUsername());
                 break;
-            case MOVE :
-                packet = new Packet2Move(data);
-                handleMove((Packet2Move) packet);
-                break;
-            case SHOOT :
-                packet = new Packet3Shoot(data);
-                handleShoot((Packet3Shoot) packet);
-                break;
             case INVALID_CONNECTION :
-                packet = new Packet4InvalidConnection(data);
-                showErrorAndExit(((Packet4InvalidConnection) packet).getMessage());
+                packet = new Packet2InvalidConnection(data);
+                showErrorAndExit(((Packet2InvalidConnection) packet).getMessage());
+            case PLAYER_STATE :
+                packet = new Packet3PlayerState(data);
+                handlePlayerState((Packet3PlayerState) packet);
         }
     }
 
-    private void handleLogin(Packet0Login packet, InetAddress address, int port) {
-        Player player = new Player(level, packet.getX(), packet.getY(), packet.getUsername(), address, port, packet.hasInput());
+    private void handleLogin(Packet0Login packet) {
+        Player player = new Player(level, packet.getX(), packet.getY(), packet.getHp(), packet.getUsername(), packet.hasInput());
         if (packet.hasInput()) {
             mainPlayer = player;
             level.setCameraPosition(player.getX(), player.getY());
@@ -117,17 +112,10 @@ public class GameClient extends Thread {
         System.out.println("Player "+player.getUsername()+" has join the level");
     }
 
-    private void handleMove(Packet2Move packet) {
+    private void handlePlayerState(Packet3PlayerState packet) {
         if (packet.getUsername().equals(mainPlayer.getUsername())) {
             return;
         }
-        level.movePlayer(packet.getUsername(), packet.getX(), packet.getY(), packet.getDirection());
-    }
-
-    private void handleShoot(Packet3Shoot packet) {
-        if (packet.getUsername().equals(mainPlayer.getUsername())) {
-            return;
-        }
-        level.makePlayerFire(packet.getUsername());
+        level.setPlayerState(packet);
     }
 }

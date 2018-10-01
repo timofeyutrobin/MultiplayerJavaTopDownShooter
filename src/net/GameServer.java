@@ -67,40 +67,34 @@ public class GameServer extends Thread {
                 packet = new Packet1Disconnect(data);
                 removeConnection((Packet1Disconnect) packet);
                 break;
-            case MOVE :
-                packet = new Packet2Move(data);
-                handleMove((Packet2Move)packet);
-                break;
-            case SHOOT :
-                packet = new Packet3Shoot(data);
-                handleShoot((Packet3Shoot) packet);
-                break;
+            case PLAYER_STATE:
+                packet = new Packet3PlayerState(data);
+                handlePlayerState((Packet3PlayerState) packet);
         }
     }
 
     private void handleLogin(Packet0Login packet, InetAddress ipAddress, int port) {
         if (connectedPlayers.size() >= PLAYER_LIMIT) {
-            var invalidConnectionPacket = new Packet4InvalidConnection("Server is full");
+            var invalidConnectionPacket = new Packet2InvalidConnection("Server is full");
             sendData(invalidConnectionPacket.getData(), ipAddress, port);
         }
         else {
             var playerSpawnPosition = getCurrentSpawnPoint();
 
-            var loginPacketBack = new Packet0Login(packet.getUsername(), playerSpawnPosition.x, playerSpawnPosition.y, true);
+            var loginPacketBack = new Packet0Login(packet.getUsername(),
+                    playerSpawnPosition.x, playerSpawnPosition.y, packet.getHp(), true);
             sendData(loginPacketBack.getData(), ipAddress, port);
 
-            var loginPacketNew = new Packet0Login(packet.getUsername(), playerSpawnPosition.x, playerSpawnPosition.y, false);
-            var player = new ServerPlayer(playerSpawnPosition.x, playerSpawnPosition.y, packet.getUsername(), ipAddress, port);
+            var loginPacketNew = new Packet0Login(packet.getUsername(),
+                    playerSpawnPosition.x, playerSpawnPosition.y, packet.getHp(), false);
+            var player = new ServerPlayer(playerSpawnPosition.x, playerSpawnPosition.y, packet.getHp(),
+                    packet.getUsername(), ipAddress, port);
             addConnection(player, loginPacketNew);
         }
     }
 
-    private void handleMove(Packet2Move packet) {
-        getPlayer(packet.getUsername()).move(packet.getX(), packet.getY());
-        sendDataToAllClients(packet.getData());
-    }
-
-    private void handleShoot(Packet3Shoot packet) {
+    private void handlePlayerState(Packet3PlayerState packet) {
+        getPlayer(packet.getUsername()).setState(packet);
         sendDataToAllClients(packet.getData());
     }
 
@@ -162,7 +156,7 @@ public class GameServer extends Thread {
         for (var p : connectedPlayers) {
             if (player.username.equalsIgnoreCase(p.username)) {
                 alreadyConnected = true;
-                var invalidConnectionPacket = new Packet4InvalidConnection("Player"+player.username+"is also connected");
+                var invalidConnectionPacket = new Packet2InvalidConnection("Player"+player.username+"is also connected");
                 sendData(invalidConnectionPacket.getData(), player.ipAddress, player.port);
             }
             else {
@@ -170,7 +164,7 @@ public class GameServer extends Thread {
                 sendData(packet.getData(), p.ipAddress, p.port);
 
                 //отправляем новому игроку данные обо всех игроках на карте
-                var packetCurrentPlayer = new Packet0Login(p.username, p.x, p.y, false);
+                var packetCurrentPlayer = new Packet0Login(p.username, p.x, p.y, p.hp, false);
                 sendData(packetCurrentPlayer.getData(), player.ipAddress, player.port);
             }
         }

@@ -1,8 +1,7 @@
 package world.objects;
 
 import game.Game;
-import net.packets.Packet2Move;
-import net.packets.Packet3Shoot;
+import net.packets.Packet3PlayerState;
 import world.graphics.PlayerAnimation;
 import world.level.Level;
 
@@ -10,11 +9,10 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.net.InetAddress;
 
 public class Player extends Mob {
     private static final int PLAYER_SPEED = 7;
-    private static final int PLAYER_HP = 100;
+    public static final int PLAYER_HP = 100;
     private static final Font PLAYER_NAME_FONT = new Font("Consolas", Font.PLAIN, 18);
 
     private BufferedImage body;
@@ -27,26 +25,23 @@ public class Player extends Mob {
     private PlayerAnimation animation;
 
     private String username;
-    private InetAddress ipAddress;
-    private int port;
-    private boolean hasInput;
+    private boolean isMainPlayer;
 
     private Point bulletSpawn;
     private boolean shooting;
 
-    //new position from server
+    //new state from server
     private int newX;
     private int newY;
     private double newDirection;
+    private int newHp;
+    private boolean newShooting;
 
-    public Player(Level level, int x, int y, String username, InetAddress ipAddress, int port, boolean hasInput) {
-        super(level, x, y, GameObjectType.PLAYER, PLAYER_SPEED, PLAYER_HP);
+    public Player(Level level, int x, int y, int hp, String username, boolean isMainPlayer) {
+        super(level, x, y, GameObjectType.PLAYER, PLAYER_SPEED, hp);
 
         this.username = username;
-        this.ipAddress = ipAddress;
-        this.port = port;
-
-        this.hasInput = hasInput;
+        this.isMainPlayer = isMainPlayer;
 
         animation = new PlayerAnimation();
         this.body = animation.getCurrentBodySprite();
@@ -67,41 +62,31 @@ public class Player extends Mob {
         return username;
     }
 
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public InetAddress getIpAddress() {
-        return ipAddress;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
     void setDamage(int damage) {
         hp -= damage;
     }
 
     @Override
     public void update() {
-        if (hasInput) moveByUser();
-        else moveByServer();
+        var shooting = this.shooting;
+        if (isMainPlayer) moveByUser();
+        else setStateFromServer();
         moveBulletSpawn();
 
         animation.update(isMoving);
         body = animation.getCurrentBodySprite();
         feet = animation.getCurrentFeetSprite();
 
+        if (isMainPlayer) {
+            var statePacket = new Packet3PlayerState(username, x, y, direction, hp, shooting);
+            Game.client.sendData(statePacket.getData());
+        }
+
         if (shooting) {
             new Bullet(level, bulletSpawn.x, bulletSpawn.y, direction);
-
-            shooting = false;
+            this.shooting = false;
         }
+
         isMoving = false;
     }
 
@@ -128,9 +113,12 @@ public class Player extends Mob {
             isMoving = true;
             move(dx * speed, dy * speed);
         }
+    }
 
-        Packet2Move packet = new Packet2Move(username, x, y, direction);
-        Game.client.sendData(packet.getData());
+    private void setStateFromServer() {
+        moveByServer();
+        hp = newHp;
+        shooting = newShooting;
     }
 
     private void moveByServer() {
@@ -145,10 +133,6 @@ public class Player extends Mob {
         shape.y = y - shape.height / 2;
         bodySpritePosition.move(x - body.getWidth() / 2, y - body.getHeight() / 2);
         feetSpritePosition.move(x - feet.getWidth() / 2, y - feet.getHeight() / 2);
-    }
-
-    public void fire() {
-        shooting = true;
     }
 
     @Override
@@ -169,10 +153,12 @@ public class Player extends Mob {
         }
     }
 
-    public void setPositionByServer(int x, int y, double direction) {
-        newX = x;
-        newY = y;
-        newDirection = direction;
+    public void receiveStateFromServer(Packet3PlayerState state) {
+        newX = state.getX();
+        newY = state.getY();
+        newDirection = state.getDirection();
+        newHp = state.getHp();
+        newShooting = state.isShooting();
     }
 
     private void moveBulletSpawn() {
@@ -207,11 +193,7 @@ public class Player extends Mob {
     }
 
     public void mousePressed() {
-        if (hasInput) {
-            fire();
-            var shootingPacket = new Packet3Shoot(username);
-            Game.client.sendData(shootingPacket.getData());
-        }
+        shooting = true;
     }
 
     private static double angleTo(double fromX, double fromY, double toX, double toY) {

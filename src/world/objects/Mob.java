@@ -18,5 +18,9 @@ public abstract class Mob extends GameObject {
         this.hp = hp;
     }
 
+    public int getHp() {
+        return hp;
+    }
+
     protected abstract void move(int dx, int dy);
 }

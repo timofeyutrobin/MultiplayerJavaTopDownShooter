@@ -50,7 +50,7 @@ public class Bullet extends GameObject {
             if (this == object) continue;
             if (object.shape.intersects(shape.x + dx, shape.y + dy, shape.width, shape.height)) {
                 if (object.getType() == GameObjectType.PLAYER) {
-                    ((Player) object).setDamage(this.damage);
+                    ((Player)object).setDamage(this.damage);
                 }
                 return true;
             }

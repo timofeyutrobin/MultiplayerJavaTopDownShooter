@@ -1,6 +1,7 @@
 package world.level;
 
 import game.Game;
+import net.packets.Packet3PlayerState;
 import world.objects.GameObject;
 import world.objects.Player;
 
@@ -52,12 +53,8 @@ public class Level {
         yOffset += dy;
     }
 
-    public void movePlayer(String username, int x, int y, double direction) {
-        getPlayer(username).setPositionByServer(x, y, direction);
-    }
-
-    public void makePlayerFire(String username) {
-        getPlayer(username).fire();
+    public void setPlayerState(Packet3PlayerState state) {
+        getPlayer(state.getUsername()).receiveStateFromServer(state);
     }
 
     private Player getPlayer(String username) {

@@ -37,6 +37,14 @@ public abstract class GameObject {
         return type;
     }
 
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
     public abstract void update();
     public abstract void render(Graphics2D g, int xOffset, int yOffset);
 

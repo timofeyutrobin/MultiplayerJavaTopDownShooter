@@ -1,15 +1,15 @@
 package net.packets;
 
-public class Packet4InvalidConnection extends Packet {
+public class Packet2InvalidConnection extends Packet {
     private String message;
 
-    public Packet4InvalidConnection(byte[] data) {
-        super(4);
+    public Packet2InvalidConnection(byte[] data) {
+        super(2);
         message = readData(data);
     }
 
-    public Packet4InvalidConnection(String message) {
-        super(4);
+    public Packet2InvalidConnection(String message) {
+        super(2);
         this.message = message;
     }
 

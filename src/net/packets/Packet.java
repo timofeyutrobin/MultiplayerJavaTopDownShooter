@@ -6,9 +6,8 @@ public abstract class Packet {
         INVALID(-1),
         LOGIN(0),
         DISCONNECT(1),
-        MOVE(2),
-        SHOOT(3),
-        INVALID_CONNECTION(4);
+        INVALID_CONNECTION(2),
+        PLAYER_STATE(3);
 
         private int packetID;
 
