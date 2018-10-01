@@ -66,14 +66,14 @@ public class Game extends Canvas {
         createServer(level.getTileMap().getSpawnPoints());
         createClient(level);
 
-        client.start();
-        if (server != null) {
-            server.start();
-        }
-
         var username = JOptionPane.showInputDialog("Enter your username");
         if (username == null) {
             System.exit(0);
+        }
+
+        client.start();
+        if (server != null) {
+            server.start();
         }
 
         var loginPacket = new Packet0Login(username);
