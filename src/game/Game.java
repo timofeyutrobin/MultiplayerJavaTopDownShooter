@@ -81,12 +81,7 @@ public class Game extends Canvas {
 
         //ждем, пока клиент создаст игрока в правильном месте карты или получит сообщение об ошибке
         while (client.getMainPlayer() == null && !client.isError()) {
-            try {
-                Thread.sleep(10);
-            }
-            catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            Thread.yield();
         }
 
         player = client.getMainPlayer();
