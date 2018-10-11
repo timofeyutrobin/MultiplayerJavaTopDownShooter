@@ -1,12 +1,10 @@
 package world.objects;
 
 import game.Game;
-import net.packets.Packet1Disconnect;
 import net.packets.Packet3PlayerState;
 import world.graphics.PlayerAnimation;
 import world.level.Level;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
@@ -14,7 +12,7 @@ import java.awt.image.BufferedImage;
 
 public class Player extends Mob {
     private static final int PLAYER_SPEED = 7;
-    public static final int PLAYER_HP = 100;
+    public static final int PLAYER_HP = 250;
     private static final Font PLAYER_NAME_FONT = new Font("Consolas", Font.PLAIN, 18);
 
     private BufferedImage body;

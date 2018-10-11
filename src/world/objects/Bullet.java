@@ -3,12 +3,16 @@ package world.objects;
 import world.level.Level;
 
 import java.awt.*;
+import java.util.Random;
 
 public class Bullet extends GameObject {
     public static final int BULLET_SIZE = 6;
 
-    public static final int BULLET_DAMAGE = 5;
+    public static final int BULLET_MIN_DAMAGE = 5;
+    public static final int BULLET_MAX_DAMAGE = 15;
     public static final int BULLET_SPEED = 25;
+
+    private static Random random = new Random();
 
     private int damage;
     private int speed;
@@ -17,7 +21,7 @@ public class Bullet extends GameObject {
 
     public Bullet(Level level, int x, int y, double direction) {
         super(level, x, y, GameObjectType.BULLET, BULLET_SIZE, BULLET_SIZE);
-        this.damage = BULLET_DAMAGE;
+        this.damage = random.nextInt(BULLET_MAX_DAMAGE) + BULLET_MIN_DAMAGE;
         this.speed = BULLET_SPEED;
 
         dx = speed * Math.cos(direction);
